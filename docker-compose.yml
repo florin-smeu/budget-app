@@ -1,16 +1,5 @@
 version: "3"
 services:
-  db:
-    image: mysql:5.7
-    ports:
-      - "32000:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-    volumes:
-      - ./db:/docker-entrypoint-initdb.d/:ro
-    networks:
-      webnet:
-        ipv4_address: 20.1.0.2
   web:
     image: florinsmeu/budget-app:0.1
     deploy:
@@ -24,12 +13,7 @@ services:
     ports:
       - "8888:5000"
     networks:
-      - webnet:
-        ipv4_address: 20.1.0.3
+      - webnet
+
 networks:
   webnet:
-   driver: bridge
-   ipam:
-     config:
-       - subnet: 20.1.0.0/16
-         gateway: 20.1.0.1
