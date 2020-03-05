@@ -87,7 +87,7 @@ def compute_average(records):
 	computed_sum = 0
 	for i in range(len(records)):
 		computed_sum += records[i][2]
-	return (float) computed_sum / len(records)
+	return computed_sum / len(records)
 
 
 @app.route('/average_daily_expenses')
@@ -100,7 +100,7 @@ def average_daily_expenses():
 	# TODO Remove once the database is created
 	records = None
 	
-	if records not None:
+	if records is not None:
 		average = compute_average(records)
 	else:
 		return 'No data'
@@ -126,7 +126,7 @@ def daily_detailed_expenses():
 	# TODO Remove once the database is created
 	records = None
 	
-	if records not None:
+	if records is not None:
 		return records
 	else:
 		return 'No data'
@@ -146,7 +146,7 @@ def expenses_between_dates():
 	# TODO Remove once the database is created
 	records = None
 	
-	if records not None:
+	if records is not None:
 		return records
 	else:
 		return 'No data'
@@ -163,7 +163,7 @@ def average_daily_incomes():
 	# TODO Remove once the database is created
 	records = None
 	
-	if records not None:
+	if records is not None:
 		average = compute_average(records)
 	else:
 		return 'No data'
@@ -189,7 +189,7 @@ def daily_detailed_incomes():
 	# TODO Remove once the database is created
 	records = None
 	
-	if records not None:
+	if records is not None:
 		return records
 	else:
 		return 'No data'
@@ -209,7 +209,7 @@ def incomes_between_dates():
 	# TODO Remove once the database is created
 	records = None
 	
-	if records not None:
+	if records is not None:
 		return records
 	else:
 		return 'No data'
