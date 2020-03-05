@@ -1,7 +1,7 @@
 version: "3"
 services:
   web:
-    image: florinsmeu/budget-app:0.1
+    image: florinsmeu/budget-app:0.2
     deploy:
       replicas: 4
       resources:

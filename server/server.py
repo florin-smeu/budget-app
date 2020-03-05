@@ -1,22 +1,144 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
+import mysql.connector
 import random
 import socket
 
 app = Flask(__name__)
 
-images = [
-	"https://i2.wp.com/www.libraryforsmartinvestors.com/wp-content/uploads/2017/02/aws_logo.jpg?fit=500%2C500&ssl=1",
-	"http://australiaday.openstack.org.au/wp-content/uploads/2016/01/openstack_500x500.png",
-	"http://isoc.ae/image/cache/catalog/courses/Google%20Cloud%20Compute%20Engine%20Essential%20Training-500x500.jpg",
-	"https://static.onthehub.com/production/attachments/9/9cb7d193-f0b7-e611-9423-b8ca3a5db7a1/7d04d71c-c4e0-4df8-8e07-ff33bf12915e.png",
-	"https://aptira.com/wp-content/uploads/2016/09/kubernetes_logo.png",
-	"https://www.opsview.com/sites/default/files/docker.png"
-]
+
+# TODO Update once the database is created
+config = {
+    'user': 'root',
+    'password': 'root',
+    'host': 'db',
+    'port': '8889',
+    'database': 'budget_db',
+    'autocommit': True
+}
+
+
+def query_database(command):
+	"""Helper function that connects to a database and queries it given the
+	command parameter.
+
+	returns: a list of records retrieved from the database
+	"""
+	connection = mysql.connector.connect(**config)
+	cursor = connection.cursor()
+
+	cursor.execute(command)
+	records = cursor.fetchall()
+	cursor.close()
+	connection.close()
+
+	return records
+
+
+""" ############################ UAuth API #############################@  """
+@app.route('/sign_in')
+def sign_in():
+	"""Function that queries the database to see if the sign in data a user 
+	provided is valid.
+
+	:returns a relevant string regarding the outcome of the sign in process
+	"""
+	username = request.args.get('username')
+	password_hash = request.args.get('password_hash')
+	
+	# Check if a username exists in the database for the given password hash
+	command = 'SELECT * FROM users WHERE password_hash = {}'.format(password_hash)
+	#records = query_database(command)
+	
+	# TODO Remove once the database is created
+	records = None
+
+	if records is None:
+		return 'Invalid username or password'
+	elif records[0][0] == username:
+		return 'Welcome, {}!'.format(username)
+	else:
+		return 'Invalid username or password'
+
+
+@app.route('/sign_up')
+def sign_up():
+	"""Method that allows a user to sign up.
+	
+	returns: a relevant string regarding the outcome of the sign up process"""
+	username = request.args.get('username')
+	password_hash = request.args.get('password_hash')
+	
+	# Check if a username is already in the database
+	command = 'SELECT * FROM users WHERE username = {}'.format(username)
+	#records = query_database(command)
+	
+	# TODO Remove once the database is created
+	records = None
+
+	if records is not None:
+		return 'Username already in use'
+	else:
+		return 'Sign up successful, {}'.format(username)
+
+
+""" ########################### Expenses API ###########################@  """
+
+@app.route('/average_daily_expenses')
+def average_daily_expenses():
+	return 'No data'
+
+
+@app.route('/average_weekly_expenses')
+def average_weekly_expenses():
+	return 'No data'
+
+	
+@app.route('/average_monthly_expenses')
+def average_monthly_expenses():
+	return 'No data'
+
+
+@app.route('/daily_detailed_expenses')
+def daily_detailed_expenses():
+	return 'No data'
+
+
+@app.route('/expenses_between_dates')
+def expenses_between_dates():
+	return 'No data'
+
+""" ########################## Incomes API #############################@  """
+
+@app.route('/average_daily_incomes')
+def average_daily_incomes():
+	return 'No data'
+
+
+@app.route('/average_weekly_incomes')
+def average_weekly_incomes():
+	return 'No data'
+
+	
+@app.route('/average_monthly_incomes')
+def average_monthly_incomes():
+	return 'No data'
+
+
+@app.route('/daily_detailed_incomes')
+def daily_detailed_incomes():
+	return 'No data'
+
+
+@app.route('/incomes_between_dates')
+def incomes_between_dates():
+	return 'No data'
+
 
 @app.route('/')
-def index():
-	url = random.choice(images)
-	return render_template('index.html', url=url, hostname=socket.gethostname())
+def root():
+	"""Root of the server
+	"""
+	return 'Budget app server works!'
 
 if __name__ == "__main__":
 	app.run(host="0.0.0.0")
