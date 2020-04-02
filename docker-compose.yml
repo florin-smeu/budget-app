@@ -1,7 +1,7 @@
 version: "3"
 services:
   web:
-    image: florinsmeu/budget-app:0.2
+    image: florinsmeu/budget-app:0.34
     deploy:
       replicas: 4
       resources:
@@ -13,6 +13,30 @@ services:
     ports:
       - "8888:5000"
     networks:
+      - webnet
+
+  visualizer:
+    image: dockersamples/visualizer:stable
+    ports:
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    networks:
+      - webnet
+
+  db:                                                                           
+    image: florinsmeu/budget-db:0.1                                                     
+    ports:                                                                      
+      - "32000:3306"                                                            
+    environment:                                                                
+      MYSQL_ROOT_PASSWORD: root                                                 
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    networks:                                                                   
       - webnet
 
 networks:

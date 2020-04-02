@@ -6,15 +6,26 @@ import socket
 app = Flask(__name__)
 
 
-# TODO Update once the database is created
 config = {
     'user': 'root',
     'password': 'root',
     'host': 'db',
-    'port': '8889',
+    'port': 3306,
     'database': 'budget_db',
     'autocommit': True
 }
+
+def insert_into_database(insert_command):
+	"""Helper function that connects to a database and iserts an entry in 
+	it given the insert_command parameter.
+
+	"""
+	connection = mysql.connector.connect(**config)
+	cursor = connection.cursor()
+
+	cursor.execute(insert_command)
+	cursor.close()
+	connection.close()
 
 
 def query_database(command):
@@ -46,18 +57,14 @@ def sign_in():
 	password_hash = request.args.get('password_hash')
 	
 	# Check if a username exists in the database for the given password hash
-	command = 'SELECT * FROM users WHERE password_hash = {}'.format(password_hash)
-	#records = query_database(command)
+	command = "select * from users where username = '{}' " \
+		  "and password_hash = '{}'".format(username, password_hash)
+	records = query_database(command)
 	
-	# TODO Remove once the database is created
-	records = None
-
-	if records is None:
+	if len(records) == 0:
 		return 'Invalid username or password'
-	elif records[0][0] == username:
-		return 'Welcome, {}!'.format(username)
 	else:
-		return 'Invalid username or password'
+		return 'Welcome, {}!'.format(username)
 
 
 @app.route('/sign_up')
@@ -69,15 +76,15 @@ def sign_up():
 	password_hash = request.args.get('password_hash')
 	
 	# Check if a username is already in the database
-	command = 'SELECT * FROM users WHERE username = {}'.format(username)
-	#records = query_database(command)
-	
-	# TODO Remove once the database is created
-	records = None
+	command = "select * from users where username = '{}'".format(username)
+	records = query_database(command)
 
-	if records is not None:
-		return 'Username already in use'
+	if len(records) != 0:
+		return 'Username already in use!'
 	else:
+		insert_command = "insert into users (username, password_hash)" \
+				 "values ('{}', '{}')".format(username, password_hash)
+		insert_into_database(insert_command)
 		return 'Sign up successful, {}'.format(username)
 
 
@@ -86,7 +93,7 @@ def sign_up():
 def compute_average(records):
 	computed_sum = 0
 	for i in range(len(records)):
-		computed_sum += records[i][2]
+		computed_sum += records[i][3]
 	return computed_sum / len(records)
 
 
@@ -94,14 +101,14 @@ def compute_average(records):
 def average_daily_expenses():
 	"""Method that returns the average income sum for a user per day.
 	"""
-	command = 'SELECT * FROM expenses WHERE username = {}'.format()
-	# records = query_database(command)
+	username = request.args.get('username')
+
+	command = "select * from expenses where username = '{}'".format(username)
+	records = query_database(command)
 	
-	# TODO Remove once the database is created
-	records = None
-	
-	if records is not None:
+	if len(records) != 0:
 		average = compute_average(records)
+		return "User {} spends daily on average {}".format(username, average) 
 	else:
 		return 'No data'
 
@@ -120,14 +127,14 @@ def average_monthly_expenses():
 def daily_detailed_expenses():
 	"""Method that returns the expenses detailed per day for a user.
 	"""
-	command = 'SELECT * FROM expenses WHERE username = {}'.format()
-	# records = query_database(command)
+	username = request.args.get('username')
 	
-	# TODO Remove once the database is created
-	records = None
+	command = "select * from expenses where username = '{}'".format(username)
 	
-	if records is not None:
-		return records
+	records = query_database(command)
+	
+	if len(records) != 0:
+		return str(records)
 	else:
 		return 'No data'
 
@@ -138,16 +145,14 @@ def expenses_between_dates():
 	"""
 	date1 = request.args.get('date1')
 	date2 = request.args.get('date2')
-
-	command = 'SELECT * FROM expenses WHERE username = {} AND \
-	expense_date BETWEEN {} AND {}'.format(username, date1, date2)
-	# records = query_database(command)
+	username = request.args.get('username')
 	
-	# TODO Remove once the database is created
-	records = None
+	command = "select * from expenses where username = '{}' AND " \
+		  "exp_date between '{}' AND '{}'".format(username, date1, date2)
+	records = query_database(command)
 	
-	if records is not None:
-		return records
+	if len(records) != 0:
+		return str(records)
 	else:
 		return 'No data'
 
@@ -157,14 +162,14 @@ def expenses_between_dates():
 def average_daily_incomes():
 	"""Method that returns the average income sum for a user per day.
 	"""
-	command = 'SELECT * FROM incomes WHERE username = {}'.format()
-	# records = query_database(command)
+	username = request.args.get('username')
+
+	command = "select * from incomes where username = '{}'".format(username)
+	records = query_database(command)
 	
-	# TODO Remove once the database is created
-	records = None
-	
-	if records is not None:
+	if len(records) != 0:
 		average = compute_average(records)
+		return "User {} earns daily on average {}".format(username, average) 
 	else:
 		return 'No data'
 
@@ -183,14 +188,14 @@ def average_monthly_incomes():
 def daily_detailed_incomes():
 	"""Method that returns the incomes detailed per day for a user.
 	"""
-	command = 'SELECT * FROM incomes WHERE username = {}'.format()
-	# records = query_database(command)
+	username = request.args.get('username')
 	
-	# TODO Remove once the database is created
-	records = None
+	command = "select * from incomes where username = '{}'".format(username)
 	
-	if records is not None:
-		return records
+	records = query_database(command)
+	
+	if len(records) != 0:
+		return str(records)
 	else:
 		return 'No data'
 
@@ -201,16 +206,15 @@ def incomes_between_dates():
 	"""
 	date1 = request.args.get('date1')
 	date2 = request.args.get('date2')
+	username = request.args.get('username')
 
-	command = 'SELECT * FROM incomes WHERE username = {} AND \
-	income_date BETWEEN {} AND {}'.format(username, date1, date2)
-	# records = query_database(command)
+	command = "select * from incomes where username = '{}' AND " \
+		  "inc_date between '{}' AND '{}'".format(username, date1, date2)
 	
-	# TODO Remove once the database is created
-	records = None
+	records = query_database(command)
 	
-	if records is not None:
-		return records
+	if len(records) != 0:
+		return str(records)
 	else:
 		return 'No data'
 
