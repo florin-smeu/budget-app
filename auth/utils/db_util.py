@@ -7,14 +7,29 @@ config = {
 	'password': 'root',
 	'host': 'db',
 	'port': 3306,
-	'database': 'budget_db',
+	'database': 'kubecaf_db',
 	'autocommit': True
 }
 
 class DBUtil:
+	""" Users """
 	DB_SELECT_USER = "select * from users where email = '{}'"
 	DB_SELECT_USER_PASSWORD = "select * from users where email = '{}' and password_hash = '{}'"
 	DB_SAVE_USER = "insert into users (email, password_hash) values ('{}', '{}')"
+
+	""" Expenses """
+	DB_SELECT_EXP = "select * from expenses where email = '{}'"
+	DB_SELECT_EXP_BETWEEN_DATES = "select * from expenses where email = '{}' AND exp_date between '{}' AND '{}'"
+
+	""" Expense category """
+	DB_SELECT_EXP_CAT = "select * from exp_cat where id = {}"
+
+	""" Incomes """
+	DB_SELECT_INC = "select * from incomes where email = '{}'"
+	DB_SELECT_INC_BETWEEN_DATES = "select * from incomes where email = '{}' AND inc_date between '{}' AND '{}'"
+
+	""" Income category """
+	DB_SELECT_INC_CAT = "select * from inc_cat where id = {}"
 
 	@staticmethod
 	def insert_into_database(insert_command):

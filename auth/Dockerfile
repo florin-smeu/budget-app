@@ -12,4 +12,4 @@ RUN apk del libressl-dev musl-dev libffi-dev
 
 COPY . /usr/src/auth/
 EXPOSE 5000
-CMD ["python3", "/usr/src/auth/authenticator.py"]
+CMD ["python3", "/usr/src/auth/auth.py"]

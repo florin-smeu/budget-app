@@ -10,6 +10,7 @@ import json
 import random
 import socket
 
+
 app = Flask(__name__)
 CORS(app)
 

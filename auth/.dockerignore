@@ -1,3 +1,3 @@
-script_auth.sh
-aes_test.py
+tests
+scripts
 utils/__pycache__
