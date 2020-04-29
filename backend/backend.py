@@ -204,7 +204,7 @@ def incomes_between_dates():
 def root():
 	"""Root of the server
 	"""
-	return {'message', 'Budget app server works!'}, HTTPStatus.OK
+	return {'message': 'Budget app server works!'}, HTTPStatus.OK
 
 if __name__ == "__main__":
 	app.run(host="0.0.0.0")
