@@ -1,5 +1,5 @@
 Flask==1.1.1
 mysql-connector-python==8.0.19
 flask_cors
-cryptography==2.9.2
+cryptography==3.2
 pycryptodome
